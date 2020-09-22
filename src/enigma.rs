@@ -2,6 +2,30 @@ pub mod enigma_m3{
     const LETTERCOUNT: usize = 26;
     const PLUGCOUNT: usize = 10;
 
+    const UKWA: [i32; LETTERCOUNT] = [4, 9, 12, 25, 0, 11, 24, 23, 21, 22, 1, 5, 2, 17, 16, 20, 14, 13, 19, 18, 15, 8, 10, 7, 6, 3];
+    const UKWB: [i32; LETTERCOUNT] = [24, 17, 20, 7, 16, 18, 11, 3, 15, 23, 13, 6, 14, 10, 12, 8, 4, 1, 5, 25, 2, 22, 21, 9, 0, 19];
+    const UKWC: [i32; LETTERCOUNT] = [5, 21, 15, 9, 8, 0, 14, 24, 4, 3, 17, 25, 23, 22, 6, 2, 19, 10, 20, 16, 18, 1, 13, 12, 7, 11];
+
+    const ROTORI: [i32; LETTERCOUNT] = [4, 10, 12, 5, 11, 6, 3, 16, 21, 25, 13, 19, 14, 22, 24, 7, 23, 20, 18, 15, 0, 8, 1, 17, 2, 9];
+    const ROTORI_CARRY: i32 = 16;
+    const ROTORII: [i32; LETTERCOUNT] = [0, 9, 3, 10, 18, 8, 17, 20, 23, 1, 11, 7, 22, 19, 12, 2, 16, 6, 25, 13, 15, 24, 5, 21, 14, 4];
+    const ROTORII_CARRY: i32 = 4;
+    const ROTORIII: [i32; LETTERCOUNT] = [1, 3, 5, 7, 9, 11, 2, 15, 17, 19, 23, 21, 25, 13, 24, 4, 8, 22, 6, 0, 10, 12 ,20, 18, 16, 14];
+    const ROTORIII_CARRY: i32 = 21;
+    const ROTORIV: [i32; LETTERCOUNT] = [4, 18, 14, 21, 15, 25, 9, 0, 24, 16, 20, 8, 17, 7, 23, 11, 13, 5, 19, 6, 10, 3, 2, 12, 22, 1];
+    const ROTORIV_CARRY: i32 = 9;
+    const ROTORV: [i32; LETTERCOUNT] = [21, 25, 1, 17, 6, 8, 19, 24, 20, 15, 18, 3, 13, 7, 11, 23, 0, 22, 12, 9, 16, 14, 5, 4, 2, 10];
+    const ROTORV_CARRY: i32 = 25;
+    const ROTORVI: [i32; LETTERCOUNT] = [9, 15, 6, 21, 14, 20, 12, 5, 24, 16, 1, 4, 13, 7, 25, 17, 3, 10, 0, 18, 23, 11, 8, 2, 19, 22];
+    const ROTORVI_CARRY_1: i32 = 25;
+    const ROTORVI_CARRY_2: i32 = 12;
+    const ROTORVII: [i32; LETTERCOUNT] = [13, 25, 9, 7, 6, 17, 2, 23, 12, 24, 18, 22, 1, 14, 20, 5, 0, 8, 21, 11, 15, 4, 10, 16, 3, 19];
+    const ROTORVII_CARRY_1: i32 = 25;
+    const ROTORVII_CARRY_2: i32 = 12;
+    const ROTORVIII: [i32; LETTERCOUNT] = [5, 10, 16, 7, 19, 11, 23, 14, 2, 1, 9, 18, 15, 3, 25, 17, 0, 12, 4, 22, 13, 8, 20, 24, 6, 21];
+    const ROTORVIII_CARRY_1: i32 = 25;
+    const ROTORVIII_CARRY_2: i32 = 12;
+
     pub struct Enigma{
         rotors: (Rotor, Rotor, Rotor),
         plate: Plate,
@@ -70,7 +94,7 @@ pub mod enigma_m3{
                 let sec_out_b = r_sec.get_output_backward(min_out_b as usize, r_min.state);
                 println!("{}", sec_out_b);
 
-                output.push((sec_out_b as u8 + 96u8) as char);
+                output.push((sec_out_b as u8 + 97u8) as char);
 
                 println!();
             }
@@ -102,14 +126,14 @@ pub mod enigma_m3{
             Rotor{
                 state: 0,
                 character_mapping: match wheelnumber{
-                    1 => [4, 10, 12, 5, 11, 6, 3, 16, 21, 25, 13, 19, 14, 22, 24, 7, 23, 20, 18, 15, 0, 8, 1, 17, 2, 9],
-                    2 => [0, 9, 3, 10, 18, 8, 17, 20, 23, 1, 11, 7, 22, 19, 12, 2, 16, 6, 25, 13, 15, 24, 5, 21, 14, 4],
-                    3 => [1, 3, 5, 7, 9, 11, 2, 15, 17, 19, 23, 21, 25, 13, 24, 4, 8, 22, 6, 0, 10, 12 ,20, 18, 16, 14],
-                    4 => [4, 18, 14, 21, 15, 25, 9, 0, 24, 16, 20, 8, 17, 7, 23, 11, 13, 5, 19, 6, 10, 3, 2, 12, 22, 1],
-                    5 => [21, 25, 1, 17, 6, 8, 19, 24, 20, 15, 18, 3, 13, 7, 11, 23, 0, 22, 12, 9, 16, 14, 5, 4, 2, 10],
-                    6 => [9, 15, 6, 21, 14, 20, 12, 5, 24, 16, 1, 4, 13, 7, 25, 17, 3, 10, 0, 18, 23, 11, 8, 2, 19, 22],
-                    7 => [13, 25, 9, 7, 6, 17, 2, 23, 12, 24, 18, 22, 1, 14, 20, 5, 0, 8, 21, 11, 15, 4, 10, 16, 3, 19],
-                    8 => [5, 10, 16, 7, 19, 11, 23, 14, 2, 1, 9, 18, 15, 3, 25, 17, 0, 12, 4, 22, 13, 8, 20, 24, 6, 21],
+                    1 => ROTORI,
+                    2 => ROTORII,
+                    3 => ROTORIII,
+                    4 => ROTORIV,
+                    5 => ROTORV,
+                    6 => ROTORVI,
+                    7 => ROTORVII,
+                    8 => ROTORVIII,
                     _ => panic!("Incompatible Rotor")//[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 }
             }
@@ -142,8 +166,9 @@ pub mod enigma_m3{
                 rotor: Rotor{
                     state: 0,
                     character_mapping: match variant{
-                        'B' => [24, 17, 20, 7, 16, 18, 11, 3, 15, 23, 13, 6, 14, 10, 12, 8, 4, 1, 5, 25, 2, 22, 21, 9, 0, 19],
-                        'C' => [5, 21, 15, 9, 8, 0, 14, 24, 4, 3, 17, 25, 23, 22, 6, 2, 19, 10, 20, 16, 18, 1, 13, 12, 7, 11],
+                        'A' => UKWA,
+                        'B' => UKWB,
+                        'C' => UKWC,
                         _ => panic!("Incompatible UKW")//[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                     }
                 }
